@@ -1,0 +1,95 @@
+<aura:component implements="flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes" access="global" controller="ComponentService">
+    <ltng:require scripts="{!join(',', $Resource.AnyEventCal + '/moment.min.js', $Resource.AnyEventCal + '/moment-timezone.min.js', $Resource.AnyEventCal + '/jquery.min.js', $Resource.AnyEventCal + '/fullcalendar.min.js')}" afterScriptsLoaded="{!c.scriptsLoaded}"
+    />
+    <ltng:require styles="{!$Resource.AnyEventCal + '/fullcalendar.min.css'}" />
+
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="eventsMap" type="map" />
+    <aura:attribute name="contactsMap" type="list" default="[]" />
+    <aura:attribute name="contactsIdList" type="list" default="[]" />
+    <aura:attribute name="specjalizationMap" type="list" default="[]" />
+
+    <aura:attribute name="specFieldLabel" type="string" default="Specjalization" />
+    <aura:attribute name="clinicianFieldLabel" type="string" default="Clinician" />
+    <aura:attribute name="selectedSpecjalizationList" type="list" default="[]" />
+    <aura:attribute name="selectedContactList" type="list" default="[]" />
+    <aura:attribute name="selectedSpecValue" type="string" default="" />
+    <aura:attribute name="selectedContactValue" type="string" default="" />
+
+
+    <aura:attribute name="parentList" type="list" default="[]" />
+    <aura:attribute name="childList" type="list" default="[]" />
+    <aura:attribute name="pickListMap" type="map" />
+    <aura:attribute name="contactsSpecMap" type="map" />
+    <aura:attribute name="disabledChildField" type="boolean" default="true" />
+    <aura:attribute name="parentFieldLabel" type="string" default="Specjalization" />
+    <aura:attribute name="childFieldLabel" type="string" default="Clinician" />
+    <aura:attribute name="parentValue" type="string" default="" />
+    <aura:attribute name="childValue" type="string" default="" />
+
+    <aura:attribute name="newOrEdit" type="String" default="New" />
+    <aura:attribute name="idVal" type="String" />
+    <aura:attribute name="titleVal" type="String" />
+    <aura:attribute name="clientEmail" type="String" />
+
+    <aura:attribute name="descriptionVal" type="String" />
+    <aura:attribute name="startDateTimeVal" type="DateTime" />
+    <aura:attribute name="endDateTimeVal" type="DateTime" />
+    <aura:handler name="change" value="{!v.events}" action="{!c.renderCalendar}" />
+
+    <div class="slds">
+        <div class="slds-card">
+            <lightning:select name="specField" aura:id="specField" value="{!v.selectedSpecValue}" label="{!v.specFieldLabel}" onchange="{!c.specFieldChange}">
+                <aura:iteration items="{!v.selectedSpecjalizationList}" var="spec">
+                    <option value="{!spec.value}">{!spec.label}</option>
+                </aura:iteration>
+            </lightning:select>
+            <lightning:select name="clinicianField" aura:id="clinicianField" value="{!v.selectedContactValue}" label="{!v.clinicianFieldLabel}" onchange="{!c.clinicianFieldChange}">
+                <aura:iteration items="{!v.selectedContactList}" var="clinician">
+                    <option value="{!clinician.value}">{!clinician.label}</option>
+                </aura:iteration>
+            </lightning:select>
+        </div>
+        <div class="slds-card">
+
+
+            <div id="calendar" class="anyCalendar"></div>
+            <div aura:id="modal" class="slds-modal">
+                <div class="slds-modal__container">
+                    <div class="slds-modal__header">
+
+                        <lightning:buttonIcon size="large" iconName="utility:close" variant="bare" onclick="{!c.closeModal}" alternativeText="Close window." class="slds-modal__close" />
+
+                        <h2 id="header43" class="slds-text-heading--medium">{!v.newOrEdit}&nbsp;Event</h2>
+                    </div>
+                    <div class="slds-modal__content slds-p-around--medium">
+                        <div class="slds-form--stacked">
+                            <ui:inputText aura:id="title" label="Title" value="{!v.titleVal}" required="true" />
+                            <ui:inputText aura:id="clientEmail" label="Client Email" value="{!v.clientEmail}" required="true" />
+                            <ui:inputTextArea aura:id="description" label="Description" value="{!v.descriptionVal}" rows="5" />
+                            <lightning:select name="parentField" aura:id="parentField" value="{!v.parentValue}" label="{!v.parentFieldLabel}" onchange="{!c.parentFieldChange}">
+                                <aura:iteration items="{!v.parentList}" var="spec">
+                                    <option value="{!spec.value}">{!spec.label}</option>
+                                </aura:iteration>
+                            </lightning:select>
+                            <lightning:select name="childField" value="{!v.childValue}" label="{!v.childFieldLabel}" disabled="{!v.disabledChildField}">
+                                <aura:iteration items="{!v.childList}" var="clinician">
+                                    <option value="{!clinician.value}">{!clinician.label}</option>
+                                </aura:iteration>
+                            </lightning:select>
+                            <ui:inputDateTime aura:id="startTime" label="Start Time" class="field" value="{!v.startDateTimeVal}" displayDatePicker="true" required="true" />
+
+                            <ui:inputDateTime aura:id="endTime" label="End Time" class="field" value="{!v.endDateTimeVal}" displayDatePicker="true" required="true" />
+                        </div>
+                    </div>
+                    <div class="slds-modal__footer">
+                        <lightning:button value="{!v.idVal}" onclick="{!c.deleteRecord}" label="Delete" variant="destructive" class="slds-float--left slds-float_left" />
+                        <lightning:button onclick="{!c.closeModal}" label="Cancel" variant="neutral" />
+                        <lightning:button value="{!v.idVal}" onclick="{!c.createRecord}" label="Save" variant="brand" />
+                    </div>
+                </div>
+            </div>
+            <div class="slds-backdrop" aura:id="backdrop"></div>
+        </div>
+    </div>
+</aura:component>

@@ -1,0 +1,9 @@
+Hi,
+
+Your appointment {!Event.StartDateTime} to  EndDateTime.
+
+Has been confirmed.
+
+Thanks
+
+This is an automatic message please do not respond.
